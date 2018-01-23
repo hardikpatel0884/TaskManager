@@ -6,8 +6,8 @@
  * Author: Hardik Patel
  */
 
-const Config = {
+const config = {
     port: process.env.PORT || 3000
 }
 
-module.exports = { Config }
+module.exports = { config }

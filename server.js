@@ -5,9 +5,11 @@
  * CreatedAt: 22/01/2018
  * Author: Hardik Patel
  */
+
 const express = require('express'),
     bodyParser = require('body-parser'),
-    { Config } = require('./config/config'),
+    { config } = require('./config/config'),
+    { mongoose } = require('./config/dbConnect'),
     app = express();
 
 app.use(bodyParser());
@@ -15,8 +17,8 @@ app.use(bodyParser.json());
 
 app.get('/test', (req, res) => {
     res.send('tast tart')
-})
+});
 
-app.listen(Config.port, () => {
-    console.log(`server listen on port no ${Config.port}`)
-})
+app.listen(config.port, () => {
+    console.log(`server listen on port no ${config.port}`)
+});
