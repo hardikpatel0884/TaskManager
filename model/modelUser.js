@@ -5,7 +5,7 @@
  * Author: Hardik Patel
  * */
 
-const mongoose = required('mongoose'), validator = required('validator');
+const mongoose = required('mongoose'), validator = required('validator'),bcrypt=required('bcrypt');
 
 const scheemaUser = new mongoose.Schema({
     name: {

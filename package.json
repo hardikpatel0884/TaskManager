@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/hardikpatel0884/TaskManager#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
-    "encrypt-js": "^1.0.0",
     "express": "^4.16.2",
     "express-fileupload": "^0.3.0",
     "express-session": "^1.15.6",
