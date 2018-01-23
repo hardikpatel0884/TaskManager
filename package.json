@@ -1,0 +1,30 @@
+{
+  "name": "taskmanager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hardikpatel0884/TaskManager.git"
+  },
+  "author": "Hardik Patel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hardikpatel0884/TaskManager/issues"
+  },
+  "homepage": "https://github.com/hardikpatel0884/TaskManager#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-fileupload": "^0.3.0",
+    "express-session": "^1.15.6",
+    "mongodb": "^3.0.1",
+    "mongoose": "^5.0.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "validator": "^9.2.0"
+  }
+}
