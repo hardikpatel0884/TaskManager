@@ -7,7 +7,8 @@
  */
 const express = require('express'),
     bodyParser = require('body-parser'),
-    { Config } = require('./config/config'),
+    { config } = require('./config/config'),
+    {mongoose}=require('./config/conection'),
     app = express();
 
 app.use(bodyParser());
@@ -17,6 +18,6 @@ app.get('/test', (req, res) => {
     res.send('tast tart')
 })
 
-app.listen(Config.port, () => {
-    console.log(`server listen on port no ${Config.port}`)
+app.listen(config.port, () => {
+    console.log(`server listen on port no ${config.port}`)
 })
