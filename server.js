@@ -27,15 +27,23 @@ app.use((req, res, next) => {
     let log = `${new Date().toString()} : ${req.method} ${req.url}`;
     fs.appendFile('./server.log', log + "\n");
 
-    if(req.url.toString()==="/user/login" || req.url.toString()==="/user/register"){
+    if (req.url.toString() === "/user/login" || req.url.toString() === "/user/register") {
         next();
-    }else{
-        User.findOne({"apiKey":req.header("apiKey")}).then(user=>{
-            if(user){
-                next();
+    } else {
+        User.findOne({"apiKey": req.header("apiKey")}).then(user => {
+            if (user) {
+                if (req.body.user || req.query.user) {
+                    if (req.body.user === user.id || req.query.user === user.id) {
+                        next();
+                    } else {
+                        res.status(400).send({error: true, message: "you are not authorize to use this process"})
+                    }
+                } else {
+                    next();
+                }
                 // res.send(user)
-            }else{
-                res.status(401).send({error:true,message:"unauthorized user"});
+            } else {
+                res.status(401).send({error: true, message: "unauthorized user"});
             }
         })
     }
