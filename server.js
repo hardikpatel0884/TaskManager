@@ -27,18 +27,24 @@ app.use((req, res, next) => {
     let log = `${new Date().toString()} : ${req.method} ${req.url}`;
     fs.appendFile('./server.log', log + "\n");
 
+    // validate user for api apart of login and register
     if (req.url.toString() === "/user/login" || req.url.toString() === "/user/register") {
         next();
     } else {
+        // check for valid apiKey
         User.findOne({"apiKey": req.header("apiKey")}).then(user => {
             if (user) {
+                // check user want to check personal informaion
                 if (req.body.user || req.query.user) {
                     if (req.body.user === user.id || req.query.user === user.id) {
+                        // user want to check own personal information
                         next();
                     } else {
+                        // user want check other's personal information
                         res.status(400).send({error: true, message: "you are not authorize to use this process"})
                     }
                 } else {
+                    // if user check own information
                     next();
                 }
                 // res.send(user)
@@ -50,27 +56,12 @@ app.use((req, res, next) => {
 });
 app.use(passport.initialize());
 app.use(passport.session());
+// include passport local authentication
 require('./config/passportLocalAuth')(passport)
+// include user routes
 require('./routes/routeUser')(app, passport);
+// includes task routes
 require('./routes/routeTask')(app);
-
-app.get('/test', (req, res) => {
-    res.send('tast tart')
-});
-
-app.get('/save', (req, res) => {
-    var user = new User({
-        name: 'hardik',
-        email: 'hardik',
-        password: 'hardik'
-    });
-
-    user.save().then((result) => {
-        res.send(result);
-    }, (e) => {
-        res.send(e);
-    })
-});
 
 app.listen(config.port, () => {
     console.log(`server listen on port no ${config.port}`)
