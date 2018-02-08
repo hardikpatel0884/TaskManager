@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Register User</title>
+</head>
+<body>
+<center>
+    <h1>Register User</h1>
+    {{#if error}}
+        <div style="background-color: red;color: white;padding: 20px; margin: 30px">
+            <b>{{error}}</b>
+        </div>
+    {{/if}}
+    <form method="post" action="register">
+        <input type="text" name="name" placeholder="User Name" required minlength="3" maxlength="30"/><br><br>
+        <input type="email" name="email" placeholder="User Email" required/><br><br>
+        <input type="password" name="password" placeholder="password"/><br><br>
+        <input type="submit" name="register" value="Register"/> <a href="login" title="login">already register</a>
+    </form>
+</center>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<html>
+<head><title>User Login</title></head>
+<body>
+<center>
+    <h1>User Login</h1>
+    {{#if error}}
+        <div style="background-color: red;color: white;padding: 20px; margin: 30px"><b>{{error}}</b></div>
+    {{/if}}
+    <form method="post" action="login">
+        <input type="email" name="username" placeholder="Enter Username"><br><br>
+        <input type="password" name="password" placeholder="Enter Password"><br><br>
+        <input type="submit" name="login" value="Login"> &nbsp; <a href="register" title="Register">new here.?</a>
+    </form>
+</center>
+</body>
+</html>
