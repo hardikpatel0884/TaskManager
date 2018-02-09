@@ -58,7 +58,7 @@ schemUser.pre('save', function (next) {
 schemUser.statics.findByApiKey = function (apiKey,cb) {
     this.model("User").findOne({apiKey: apiKey}).then(user => {
         if (user) {
-            cb(user.id)
+            cb(user)
             // return user.id;
         } else {
             cb(false)

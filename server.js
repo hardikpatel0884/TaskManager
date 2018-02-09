@@ -53,10 +53,13 @@ app.use((req, res, next) => {
             }
         })*/
 
-        User.findByApiKey(req.header('apiKey'), (id) => {
-            if (id)
-                res.send(id)
-            res.status(400).send("unauthorized user")
+        User.findByApiKey(req.header('apiKey'), (user) => {
+            if (user) {
+                req.user = user;
+                next()
+            } else {
+                res.status(400).send("unauthorized user")
+            }
         });
     }
 });

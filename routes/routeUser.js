@@ -97,7 +97,7 @@ module.exports = (app, passport) => {
      * get list of all user details
      * */
     app.get('/user/get', (req, res) => {
-        console.log("start");
+        /* req.user //to get user set by middleware */
         User.find().then(user=>{
             res.send({"users":user})
         },e=>{
