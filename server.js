@@ -32,7 +32,7 @@ app.use((req, res, next) => {
         next();
     } else {
         // check for valid apiKey
-        User.findOne({"apiKey": req.header("apiKey")}).then(user => {
+        /*User.findOne({"apiKey": req.header("apiKey")}).then(user => {
             if (user) {
                 // check user want to check personal informaion
                 if (req.body.user || req.query.user) {
@@ -51,13 +51,19 @@ app.use((req, res, next) => {
             } else {
                 res.status(401).send({error: true, message: "unauthorized user"});
             }
-        })
+        })*/
+
+        User.findByApiKey(req.header('apiKey'), (id) => {
+            if (id)
+                res.send(id)
+            res.status(400).send("unauthorized user")
+        });
     }
 });
 app.use(passport.initialize());
 app.use(passport.session());
 // include passport local authentication
-require('./config/passportLocalAuth')(passport)
+require('./config/passportLocalAuth')(passport);
 // include user routes
 require('./routes/routeUser')(app, passport);
 // includes task routes
