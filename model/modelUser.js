@@ -32,6 +32,10 @@ const schemUser = new mongoose.Schema({
     apiKey: {
         type:String
     },
+    image:{
+        type:String,
+        default:"user.png"
+    },
     google: String,
     facebook: String
 });

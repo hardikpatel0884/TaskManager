@@ -12,30 +12,33 @@ const express = require('express'),
     {mongoose} = require('./config/dbConnect'),
     {User} = require('./model/modelUser'),
     {Task} = require('./model/modelTask'),
+    base64Img = require('base64-img'),
     fs = require('fs'),
     hbs = require('hbs'),
     passport = require('passport'),
     session = require('express-session');
 
 app = express();
-app.use(session({secret: 'user'}))
+app.use(session({secret: 'user'}));
 app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/views/user/'));
-app.use(bodyParser());
+app.use(express.static(__dirname + '/image/'));
+// app.use(bodyParser());
 app.use(bodyParser.json());
+app.use(bodyParser({limit: '500mb', extended: true}));
 app.use((req, res, next) => {
     let log = `${new Date().toString()} : ${req.method} ${req.url}`;
     fs.appendFile('./server.log', log + "\n");
 
-    if(req.url.toString()==="/user/login" || req.url.toString()==="/user/register"){
+    if (req.url.toString() === "/user/login" || req.url.toString() === "/user/register" || req.url.toString() == "/image/user.*") {
         next();
-    }else{
-        User.findOne({"apiKey":req.header("apiKey")}).then(user=>{
-            if(user){
+    } else {
+        User.findOne({"apiKey": req.header("apiKey")}).then(user => {
+            if (user) {
+                req.user = user;
                 next();
-                // res.send(user)
-            }else{
-                res.status(401).send({error:true,message:"unauthorized user"});
+            } else {
+                res.status(401).send({error: true, message: "unauthorized user"});
             }
         })
     }
@@ -46,23 +49,32 @@ require('./config/passportLocalAuth')(passport)
 require('./routes/routeUser')(app, passport);
 require('./routes/routeTask')(app);
 
-app.get('/test', (req, res) => {
-    res.send('tast tart')
-});
-
-app.get('/save', (req, res) => {
-    var user = new User({
-        name: 'hardik',
-        email: 'hardik',
-        password: 'hardik'
+// testing image upload
+app.post('/upload', (req, res) => {
+    console.log("start image")
+    var isUpload = true;
+    const imagString = req.body.image;
+    const imagename = Date.now() + ".jpeg";
+    let imagePath = './image/user/' + imagename
+    fs.writeFile(imagePath, new Buffer(imagString, "base64"), (err) => {
+        if (err) {
+            isUpload = false;
+            res.send({error:true,message:err})
+        }
     });
-
-    user.save().then((result) => {
-        res.send(result);
-    }, (e) => {
-        res.send(e);
-    })
-});
+    if (isUpload) {
+        console.log('image:', req.user.id);
+        User.findOneAndUpdate({_id: req.user.id}, {image: imagename}, {new: true}, (err, result) => {
+            if (err) {
+                res.send({error: true, message: "unable to upload image"});
+            } else if (result) {
+                res.status(200).send({error: false, message: "image uploaded", user: {result}});
+            }
+        })
+    } else {
+        res.send("thaygyu bhai");
+    }
+})
 
 app.listen(config.port, () => {
     console.log(`server listen on port no ${config.port}`)

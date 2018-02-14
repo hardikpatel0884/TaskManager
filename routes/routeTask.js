@@ -3,7 +3,8 @@
  * tasks end point
  * */
 
-const {Task} = require('./../model/modelTask');
+const {Task} = require('./../model/modelTask'),
+    fs = require('fs');
 
 module.exports = (app) => {
     /**
@@ -12,21 +13,33 @@ module.exports = (app) => {
      * @param {String} description description of task
      * @param {user} user user_id which specify task for particular user
      * */
-    app.post('/task/add',(req,res)=>{
-       let task=new Task({
-           title:req.body.title,
-           description:req.body.description,
-           user:req.body.user
-       })
+    app.post('/task/add', (req, res) => {
+        let task = new Task({
+            title: req.body.title,
+            description: req.body.description,
+            user: req.body.user
+        })
 
-        task.save().then(task=>{
+        task.save().then(task => {
             res.status(201).send({
-                error:false,
-                message:"success",
-                task:task
+                error: false,
+                message: "success",
+                task: task
             })
-        },err=>{
-            res.status(400).send({error:true,message:"fail to create "+err})
+        }, err => {
+            res.status(400).send({error: true, message: "fail to create " + err})
         })
     });
+
+    app.get('/post/get/',(req,res)=>{
+        Task.find({user:req.body.user}).then(tasks=>{
+            if(!tasks){
+                res.status(200).send({error:false,message:"no task found",task:null})
+            }else{
+                res.status(200).send({error:false,message:"success",task:{tasks}})
+            }
+        },err=>{
+            res.status(400).send({error:true,message:err.toString()})
+        })
+    })
 }

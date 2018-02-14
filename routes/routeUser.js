@@ -4,7 +4,8 @@
  * CreatedAt: 26/01/2018 4:12 PM
  * Author: Hardik Patel
  * */
-const {User} = require('./../model/modelUser');
+const {User} = require('./../model/modelUser'),
+fs=require('fs');
 module.exports = (app, passport) => {
     /**
      * GET /user/register
@@ -19,25 +20,71 @@ module.exports = (app, passport) => {
      * register user
      * */
     app.post('/user/register', (req, res) => {
+        let image =Date.now() + ".jpeg";
+        let imagePath="./image/user/"+image;
+        var isUpload=true;
+        if(req.body.image){
+            fs.writeFile(imagePath, new Buffer(req.body.image, "base64"), (err) => {
+                if (err) {
+                    console.log("in error : ",err)
+                    isUpload=false;
+                }
+            });
+        }else{
+            image="user.png"
+        }
+
         let user = new User({
             name: req.body.name,
             email: req.body.email,
-            password: req.body.password
+            password: req.body.password,
+            image:image
         });
-        user.save().then((user) => {
-            res.set("apiKey", user.apiKey).status(201).send({
-                Register: {
-                    error: false,
-                    message: "success",
-                    user: {"name": user.name, "email": user.email}
+        console.log("user ready: ",user)
+        if (isUpload) {
+            user.save().then((user) => {
+                console.log(user)
+                res.set("apiKey", user.apiKey).status(201).send({
+                    "Register": {
+                        "error": false,
+                        "message": "success",
+                        "user": {"name": user.name, "email": user.email, "image":user.image}
+                    }
+
+                });
+            }, (e) => {
+                console.log(e)
+                res.status(200).send({Register: {error: true, message: "fail to register " + e}});
+                // res.render('userRegister.hbs',{'error':e.toString()});
+            })
+        }else{
+            res.status(200).send({Register: {error: true, message: "fail to register " + e}});
+        }
+    });
+
+    /**
+     * PUT /user/image
+     * */
+    app.put('/user/image', (req, res) => {
+        if (req.body.image) {
+            let image =`${req.user.name}_${Date.now}.jpeg`;
+            console.log("image name ",image);
+            let imagePath="./../image/user/"+image;
+            fs.writeFile(imagePath, new Buffer(req.body.image, "base64"), (err) => {
+                if (err) {
+                    res.send(err)
                 }
             });
-            //res.status(201).send(`Welcome ${user.name} as ${user.email}`);
-        }, (e) => {
-            res.status(200).send({Register: {error: true, message: "fail to register "+e}});
-            // res.render('userRegister.hbs',{'error':e.toString()});
-        })
-    });
+            User.findOneAndUpdate({id: req.user.id}, {$set: {image: image}}, {new: true}, (err, user) => {
+                if (err) {
+                    res.status(200).send({error: true, message: "image unable updated"})
+                }
+                res.status(200).send({error: false, message: "image updated", image: user.image});
+            });
+        } else {
+            res.status(400).send({error: true, message: "no image found"});
+        }
+    })
 
     /**
      * GET /user/login
@@ -65,7 +112,11 @@ module.exports = (app, passport) => {
             Login: {
                 error: false,
                 message: "success",
-                user: {"name": req.session.passport.user.name, "email": req.session.passport.user.email,"_id":req.session.passport.user.id}
+                user: {
+                    "name": req.session.passport.user.name,
+                    "email": req.session.passport.user.email,
+                    "_id": req.session.passport.user.id
+                }
             }
         });
         //res.render('userProfile.hbs',req.session.passport.user)
@@ -98,9 +149,9 @@ module.exports = (app, passport) => {
      * */
     app.get('/user/get', (req, res) => {
         console.log("start");
-        User.find().then(user=>{
-            res.send({"users":user})
-        },e=>{
+        User.find().then(user => {
+            res.send({"users": user})
+        }, e => {
             res.send(e)
         })
     });

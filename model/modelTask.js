@@ -12,15 +12,19 @@ const schemaTask = new mongoose.Schema({
         type: String,
         required: true
     },
-    description:{
+    description: {
+        type: String,
+        required: true,
+        maxLength: 100
+    },
+    image: {
         type:String,
-        required:true,
-        maxLength:100
+        default:"user.png"
     },
     user: {
-        type:mongoose.Schema.ObjectId
+        type: mongoose.Schema.ObjectId
     }
 });
 
-const Task=mongoose.model('Task',schemaTask);
-module.exports={Task}
+const Task = mongoose.model('Task', schemaTask);
+module.exports = {Task}
