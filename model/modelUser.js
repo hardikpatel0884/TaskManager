@@ -30,7 +30,7 @@ const schemUser = new mongoose.Schema({
         required: true
     },
     apiKey: {
-        type:String
+        type: String
     },
     image:{
         type:String,
@@ -42,21 +42,36 @@ const schemUser = new mongoose.Schema({
 
 schemUser.pre('save', function (next) {
     if (this.isModified('password')) {
-        bcrypt.genSalt(10,(err,salt)=>{
-            bcrypt.hash(this.password,salt,(err,hash)=>{
-                this.password=hash;
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(this.password, salt, (err, hash) => {
+                this.password = hash;
                 /** generating api key */
-                bcrypt.genSalt(10,(err,salt)=>{
-                    bcrypt.hash(Date.now().toString(),salt,(err,hash)=>{
-                        this.apiKey=hash;
+                bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(Date.now().toString(), salt, (err, hash) => {
+                        this.apiKey = hash;
                         next();
                     })
                 })
             })
         })
-    }else{
+    } else {
         next();
     }
 });
+
+schemUser.statics.findByApiKey = function (apiKey,cb) {
+    this.model("User").findOne({apiKey: apiKey}).then(user => {
+        if (user) {
+            cb(user)
+            // return user.id;
+        } else {
+            cb(false)
+            // return false;
+        }
+    }, err => {
+        cb(false)
+        // return false;
+    })
+};
 const User = mongoose.model('User', schemUser);
 module.exports = {User}

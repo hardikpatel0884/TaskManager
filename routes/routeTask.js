@@ -31,6 +31,7 @@ module.exports = (app) => {
         })
     });
 
+<<<<<<< HEAD
     app.get('/post/get/',(req,res)=>{
         Task.find({user:req.body.user}).then(tasks=>{
             if(!tasks){
@@ -40,6 +41,22 @@ module.exports = (app) => {
             }
         },err=>{
             res.status(400).send({error:true,message:err.toString()})
+=======
+    /**
+     * GET /task/get/user
+     * get all the task
+     * @param {ObjectId} user userid
+     * */
+    app.get('/task/get/:user', (req, res) => {
+        Task.find({user: req.params.user}).then(tasks => {
+            if (tasks) {
+                res.status(200).send({error: false, message: "success", tasks: tasks})
+            } else {
+                res.status(200).send({error: false, message: "no task found"})
+            }
+        }, err => {
+            res.status(400).send({error: true, message: err})
+>>>>>>> 6bc488d98013c9714d36e80229b4d2d392a95fee
         })
     })
 }

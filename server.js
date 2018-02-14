@@ -30,6 +30,7 @@ app.use((req, res, next) => {
     let log = `${new Date().toString()} : ${req.method} ${req.url}`;
     fs.appendFile('./server.log', log + "\n");
 
+<<<<<<< HEAD
     if (req.url.toString() === "/user/login" || req.url.toString() === "/user/register" || req.url.toString() == "/image/user.*") {
         next();
     } else {
@@ -37,18 +38,54 @@ app.use((req, res, next) => {
             if (user) {
                 req.user = user;
                 next();
+=======
+    // validate user for api apart of login and register
+    if (req.url.toString() === "/user/login" || req.url.toString() === "/user/register") {
+        next();
+    } else {
+        // check for valid apiKey
+        /*User.findOne({"apiKey": req.header("apiKey")}).then(user => {
+            if (user) {
+                // check user want to check personal informaion
+                if (req.body.user || req.query.user) {
+                    if (req.body.user === user.id || req.query.user === user.id) {
+                        // user want to check own personal information
+                        next();
+                    } else {
+                        // user want check other's personal information
+                        res.status(400).send({error: true, message: "you are not authorize to use this process"})
+                    }
+                } else {
+                    // if user check own information
+                    next();
+                }
+                // res.send(user)
+>>>>>>> 6bc488d98013c9714d36e80229b4d2d392a95fee
             } else {
                 res.status(401).send({error: true, message: "unauthorized user"});
             }
-        })
+        })*/
+
+        User.findByApiKey(req.header('apiKey'), (user) => {
+            if (user) {
+                req.user = user;
+                next()
+            } else {
+                res.status(400).send("unauthorized user")
+            }
+        });
     }
 });
 app.use(passport.initialize());
 app.use(passport.session());
-require('./config/passportLocalAuth')(passport)
+// include passport local authentication
+require('./config/passportLocalAuth')(passport);
+// include user routes
 require('./routes/routeUser')(app, passport);
+// includes task routes
 require('./routes/routeTask')(app);
 
+<<<<<<< HEAD
 // testing image upload
 app.post('/upload', (req, res) => {
     console.log("start image")
@@ -76,6 +113,8 @@ app.post('/upload', (req, res) => {
     }
 })
 
+=======
+>>>>>>> 6bc488d98013c9714d36e80229b4d2d392a95fee
 app.listen(config.port, () => {
     console.log(`server listen on port no ${config.port}`)
 });
